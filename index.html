@@ -1,27 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <title>Awesome Charts</title>
-</head>
-<body>
-    
+  </head>
+  <body>
+    <canvas id="myChart" width="600" height="300"></canvas>
     <script>
-        getdata();
-        async function getdata(){
-            const response = await fetch('data.csv');
-            const data = await response.text();
-            const rows = data.split('\n').slice(1);
-            for(row of rows){                
-                const element = row.split(',');
-                const year = element[0];
-                const temp = element[1];
-            }
+      lineChart();
+      async function lineChart() {
+        const data = await getdata();
+        const ctx = document.getElementById("myChart").getContext("2d");
+        const myChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: data.x,
+            datasets: [
+              {
+                label: "Combined Land-Surface Air and Sea-Surface Water Temperature Anomalies",
+                data: data.y,
+                backgroundColor: "rgba(255, 99, 132, 0.2)",
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+      async function getdata() {
+        const x = [];
+        const y = [];
 
-            
+        const response = await fetch("data.csv");
+        const data = await response.text();
+        const rows = data.split("\n").slice(1);
+        for (row of rows) {
+          const element = row.split(",");
+          const year = element[0];
+          x.push(year);
+          const temp = element[1];
+          y.push(temp);
         }
+        return { x, y };
+      }
     </script>
-</body>
+  </body>
 </html>
